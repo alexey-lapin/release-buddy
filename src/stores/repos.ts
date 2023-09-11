@@ -11,14 +11,14 @@ export const useReposStore = defineStore('repos', () => {
       name: 'sspgo_cache',
       modules: [
         { name: 'cache-man-center', type: 'APP', dependencies: [] },
-        { name: 'cache-server', type: 'APP', dependencies: [] }
+        { name: 'cache-server', type: 'APP', dependencies: ["com.example:domain"] }
       ]
     },
     {
       name: 'sspgo_query',
       modules: [
         { name: 'query-core', type: 'LIB', dependencies: [] },
-        { name: 'query-service', type: 'APP', dependencies: [] }
+        { name: 'query-service', type: 'APP', dependencies: ["com.exmaple:query-core", "com.example:domain"] }
       ]
     }
   ])

@@ -11,6 +11,8 @@ import { useReposStore } from '@/stores/repos'
 import type SelectableItem from '@/model/SelectableItem'
 import { usePreferencesStore } from '@/stores/preferences'
 import type PersistedSelectedRepo from '@/model/PersistedSelectedRepo'
+import type PhasedPlan from '@/model/PhasedPlan'
+import { createBuildPlan } from '@/service/BuildGraph'
 
 const autoComplete = ref('')
 
@@ -20,12 +22,18 @@ const preferencesStore = usePreferencesStore()
 const autoCompleteItems: Ref<SelectableItem[]> = ref([])
 const selectedItems: Ref<Repo[]> = ref([])
 
+const plan: Ref<PhasedPlan[]> = ref([])
+
 preferencesStore.selectedRepos.map((repo: PersistedSelectedRepo) => {
   const repoItem = reposStore.getRepoByName(repo.name)
   if (repoItem) {
     selectedItems.value.push(repoItem)
   }
 })
+plan.value = createBuildPlan(
+    reposStore.repos,
+    selectedItems.value.flatMap((item) => item.modules.map((m) => m.name))
+)
 
 const autoCompleteSearch = (event: AutoCompleteCompleteEvent) => {
   autoCompleteItems.value = event.query
@@ -66,6 +74,10 @@ const syncSelectedItems = (repos: Repo[]) => {
       name: repo.name
     }
   })
+  plan.value = createBuildPlan(
+    reposStore.repos,
+    selectedItems.value.flatMap((item) => item.modules.map((m) => m.name))
+  )
 }
 
 const getTagClass = (item: SelectableItem) => {
@@ -121,6 +133,18 @@ interface Item {
           :item="item"
           @delete="onItemDelete"
         />
+      </div>
+    </Panel>
+    <Panel header="Plan">
+      <div class="flex flex-column gap-2">
+        <div v-for="item in plan" :key="item.phase">
+          <p class="mono">{{ item.phase }}</p>
+          <div class="flex flex-wrap gap-2">
+            <div v-for="repo in item.repos" :key="repo">
+              <p class="mono">{{ repo }}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </Panel>
   </div>

@@ -8,11 +8,12 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      // component: HomeView
+      redirect: '/dependency-graph'
     },
     {
-      path: '/dependencies',
-      name: 'dependencies',
+      path: '/dependency-graph',
+      name: 'dependency graph',
       component: DependenciesView
     },
     {
