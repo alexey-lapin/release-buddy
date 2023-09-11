@@ -1,5 +1,6 @@
 import './assets/main.css'
 import 'primevue/resources/themes/mira/theme.css'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
@@ -16,7 +17,10 @@ import 'primeicons/primeicons.css'
 
 const app = createApp(App)
 
-app.use(createPinia())
+const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
+
+app.use(pinia)
 app.use(router)
 app.use(PrimeVue)
 

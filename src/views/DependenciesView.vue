@@ -9,14 +9,23 @@ import RepoItem from '@/components/RepoItem.vue'
 import type Repo from '@/model/Repo'
 import { useReposStore } from '@/stores/repos'
 import type SelectableItem from '@/model/SelectableItem'
+import { usePreferencesStore } from '@/stores/preferences'
+import type PersistedSelectedRepo from '@/model/PersistedSelectedRepo'
 
-let autoComplete = ref('')
+const autoComplete = ref('')
 
-let reposStore = useReposStore()
+const reposStore = useReposStore()
+const preferencesStore = usePreferencesStore()
 
-let autoCompleteItems: Ref<SelectableItem[]> = ref([])
+const autoCompleteItems: Ref<SelectableItem[]> = ref([])
+const selectedItems: Ref<Repo[]> = ref([])
 
-let selectedItems: Ref<Repo[]> = ref([])
+preferencesStore.selectedRepos.map((repo: PersistedSelectedRepo) => {
+  const repoItem = reposStore.getRepoByName(repo.name)
+  if (repoItem) {
+    selectedItems.value.push(repoItem)
+  }
+})
 
 const autoCompleteSearch = (event: AutoCompleteCompleteEvent) => {
   autoCompleteItems.value = event.query
@@ -38,14 +47,25 @@ const autoCompleteSelect = (event: AutoCompleteItemSelectEvent) => {
   selectedItems.value.push(reposStore.getRepoByName(event.value.repo)!)
   selectedItems.value.sort((a, b) => a.name.localeCompare(b.name))
   autoComplete.value = ''
+  syncSelectedItems(selectedItems.value)
 }
 
 const onClear = () => {
   selectedItems.value = []
+  syncSelectedItems(selectedItems.value)
 }
 
 const onItemDelete = (name: string) => {
   selectedItems.value = selectedItems.value.filter((item) => item.name !== name)
+  syncSelectedItems(selectedItems.value)
+}
+
+const syncSelectedItems = (repos: Repo[]) => {
+  preferencesStore.selectedRepos = repos.map((repo) => {
+    return {
+      name: repo.name
+    }
+  })
 }
 
 const getTagClass = (item: SelectableItem) => {
