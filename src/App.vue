@@ -16,17 +16,12 @@ import TheFooter from '@/components/TheFooter.vue'
   <!--      </nav>-->
   <!--    </div>-->
   <!--  </header>-->
-  <div class="box">
-    <div class="row header">
-      <TheHeader />
-    </div>
-    <div class="row content">
-      <p>body</p>
+  <div class="box mt-0 flex flex-column">
+    <TheHeader />
+    <div class="row content flex-grow-1">
       <RouterView />
     </div>
-    <div class="row footer">
-      <TheFooter />
-    </div>
+    <TheFooter />
   </div>
 </template>
 
@@ -43,24 +38,6 @@ body {
 
 .box {
   width: 1140px;
-  display: flex;
-  flex-flow: column;
   height: 100%;
-}
-
-.box .row {
-  border: 1px dotted grey;
-}
-
-.box .row.header {
-  flex: 0 1 auto;
-}
-
-.box .row.content {
-  flex: 1 1 auto;
-}
-
-.box .row.footer {
-  flex: 0 1 50px;
 }
 </style>

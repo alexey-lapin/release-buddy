@@ -31,8 +31,8 @@ preferencesStore.selectedRepos.map((repo: PersistedSelectedRepo) => {
   }
 })
 plan.value = createBuildPlan(
-    reposStore.repos,
-    selectedItems.value.flatMap((item) => item.modules.map((m) => m.name))
+  reposStore.repos,
+  selectedItems.value.flatMap((item) => item.modules.map((m) => m.name))
 )
 
 const autoCompleteSearch = (event: AutoCompleteCompleteEvent) => {
@@ -78,6 +78,7 @@ const syncSelectedItems = (repos: Repo[]) => {
     reposStore.repos,
     selectedItems.value.flatMap((item) => item.modules.map((m) => m.name))
   )
+  console.log(plan.value)
 }
 
 const getTagClass = (item: SelectableItem) => {
@@ -92,37 +93,35 @@ const getTagClass = (item: SelectableItem) => {
       return ''
   }
 }
-
-interface Item {
-  name: string
-  type: string
-}
 </script>
 
 <template>
   <div>
-    <p>deps</p>
-    <AutoComplete
-      v-model="autoComplete"
-      :suggestions="autoCompleteItems"
-      optionLabel="name"
-      :dropdown="true"
-      @complete="autoCompleteSearch"
-      @item-select="autoCompleteSelect"
-      forceSelection
-    >
-      <template #option="slotProps">
-        <div>
-          <Tag :class="getTagClass(slotProps.option)"
-            ><p class="mono">{{ slotProps.option.itemType }}</p></Tag
-          >
-          {{ slotProps.option.name }}
-        </div>
-      </template>
-    </AutoComplete>
-    <Panel header="Selected">
+    <span class="mt-4 p-float-label">
+      <AutoComplete
+        inputId="ac"
+        v-model="autoComplete"
+        :suggestions="autoCompleteItems"
+        optionLabel="name"
+        :dropdown="true"
+        @complete="autoCompleteSearch"
+        @item-select="autoCompleteSelect"
+        forceSelection
+      >
+        <template #option="slotProps">
+          <div>
+            <Tag :class="getTagClass(slotProps.option)"
+              ><p class="mono">{{ slotProps.option.itemType }}</p></Tag
+            >
+            {{ slotProps.option.name }}
+          </div>
+        </template>
+      </AutoComplete>
+      <label for="ac">Enter repo or module</label>
+    </span>
+    <Panel class="mt-2" header="Selected repos">
       <template #icons>
-        <button class="p-panel-header-icon p-link mr-2" @click="onClear">
+        <button class="p-panel-header-icon mr-2" @click="onClear">
           <span class="pi pi-trash"></span>
         </button>
       </template>
@@ -131,18 +130,27 @@ interface Item {
           v-for="item in selectedItems"
           :key="item.name"
           :item="item"
+          :isDeletable="true"
           @delete="onItemDelete"
         />
       </div>
     </Panel>
-    <Panel header="Plan">
+    <Panel class="mt-2" header="Repo dependency graph">
+      <template #icons>
+        <button class="p-panel-header-icon mr-2">
+          <span class="pi pi-cog"></span>
+        </button>
+      </template>
       <div class="flex flex-column gap-2">
         <div v-for="item in plan" :key="item.phase">
-          <p class="mono">{{ item.phase }}</p>
+          <h2 class="mb-1">Stage {{ item.phase }}</h2>
           <div class="flex flex-wrap gap-2">
-            <div v-for="repo in item.repos" :key="repo">
-              <p class="mono">{{ repo }}</p>
-            </div>
+            <RepoItem
+                v-for="repo in item.repos"
+                :key="repo.name"
+                :item="repo"
+                :isDeletable="false"
+            />
           </div>
         </div>
       </div>
