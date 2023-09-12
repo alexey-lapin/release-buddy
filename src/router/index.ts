@@ -1,30 +1,20 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import DependenciesView from '@/views/DependenciesView.vue'
+import {createRouter, createWebHistory} from 'vue-router'
+import DependencyGraphView from '@/views/DependencyGraphView.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      // component: HomeView
-      redirect: '/dependency-graph'
-    },
-    {
-      path: '/dependency-graph',
-      name: 'dependency graph',
-      component: DependenciesView
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
-    }
-  ]
+    history: createWebHistory(import.meta.env.BASE_URL),
+    routes: [
+        {
+            path: '/',
+            name: 'home',
+            redirect: '/dependency-graph'
+        },
+        {
+            path: '/dependency-graph',
+            name: 'dependency graph',
+            component: DependencyGraphView
+        }
+    ]
 })
 
 export default router
