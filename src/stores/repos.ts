@@ -6,16 +6,16 @@ import type SelectableItem from '@/model/SelectableItem'
 
 export const useReposStore = defineStore('repos', () => {
     const repos: Ref<Repo[]> = ref([
-        {name: 'sspgo_domain', modules: [{name: 'domain', type: 'LIB', dependencies: []}]},
+        {name: 'repo_domain', modules: [{name: 'domain', type: 'LIB', dependencies: []}]},
         {
-            name: 'sspgo_cache',
+            name: 'repo_cache',
             modules: [
                 {name: 'cache-man-center', type: 'APP', dependencies: []},
                 {name: 'cache-server', type: 'APP', dependencies: ["com.example:domain"]}
             ]
         },
         {
-            name: 'sspgo_query',
+            name: 'repo_query',
             modules: [
                 {name: 'query-core', type: 'LIB', dependencies: []},
                 {name: 'query-service', type: 'APP', dependencies: ["com.exmaple:query-core", "com.example:domain"]}
