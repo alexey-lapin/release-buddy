@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import type Repo from '@/model/Repo'
+import type Module from "@/model/Module";
+import type {Ref} from 'vue'
+import {ref} from "vue";
+import Button from 'primevue/button'
 import Card from 'primevue/card'
+import Dialog from 'primevue/dialog'
 
 const props = defineProps<{
   item: Repo
@@ -9,26 +14,16 @@ const props = defineProps<{
 const emit = defineEmits<{
   delete: [name: string]
 }>()
+
+const modalVisible = ref(false)
+const modalModule: Ref<Module | null> = ref(null)
+const showModal = (module: Module) => {
+  modalVisible.value = true
+  modalModule.value = module
+}
 </script>
 
 <template>
-  <!--  <div class="p-2 border-primary-500 hover:border-primary-700 border-3 border-round">-->
-  <!--    <div class="flex">-->
-  <!--      <div class="flex gap-1 flex-grow-1">-->
-  <!--        <p>{{ props.item.name }}</p>-->
-  <!--        <a href="">source</a>-->
-  <!--        <a href="">build</a>-->
-  <!--      </div>-->
-  <!--      <button class="p-link ml-1" @click="emit('delete', props.item.name)">-->
-  <!--        <span class="pi pi-times"></span>-->
-  <!--      </button>-->
-  <!--    </div>-->
-  <!--    <div class="mt-2 flex flex-wrap gap-2">-->
-  <!--      <div v-for="module in props.item.modules" :key="module">-->
-  <!--        <span class="p-1 border-1 border-primary-500">{{ module.name }}</span>-->
-  <!--      </div>-->
-  <!--    </div>-->
-  <!--  </div>-->
   <Card class="border-1">
     <template #title>
       <div class="flex">
@@ -47,11 +42,41 @@ const emit = defineEmits<{
     <template #content>
       <div class="flex flex-wrap gap-2">
         <div v-for="module in props.item.modules" :key="module.name">
-          <span class="p-2 surface-200 hover:surface-300 border-800 border-round surface-border">{{ module.name }}</span>
+          <div class="p-2 surface-200 hover:surface-300 border-800 border-round surface-border"
+               @click="showModal(module)">{{
+              module.name
+            }}
+          </div>
         </div>
       </div>
     </template>
   </Card>
+  <Dialog v-model:visible="modalVisible" modal :dismissableMask="true" header="Module info" :style="{ width: '50vw' }">
+    <p>
+      <span class="font-bold">Name:</span> {{ modalModule?.name }}
+    </p>
+    <p>
+      <span class="font-bold">Type:</span>  {{ modalModule?.type }}
+    </p>
+    <p>
+      <span class="font-bold">Is Root:</span>  {{ modalModule?.isRoot }}
+    </p>
+    <p>
+      <span class="font-bold">Template:</span>  {{ modalModule?.template }}
+    </p>
+    <p>
+      <span class="font-bold">Main:</span>  {{ modalModule?.main }}
+    </p>
+    <p>
+      <span class="font-bold">Image Type:</span>  {{ modalModule?.imageType }}
+    </p>
+    <p>
+      <span class="font-bold">Dependencies:</span>
+    </p>
+    <ul>
+      <li v-for="dep in modalModule?.dependencies" :key="dep">{{ dep }}</li>
+    </ul>
+  </Dialog>
 </template>
 
 <style scoped></style>
