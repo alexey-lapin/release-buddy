@@ -32,8 +32,8 @@ const emit = defineEmits<{
   <Card class="border-1">
     <template #title>
       <div class="flex">
-        <span class="flex-grow-1">{{ props.item.name }}</span>
-        <button v-if="props.isDeletable" class="p-link ml-2" @click="emit('delete', props.item.name)">
+        <span class="flex-grow-1">{{ props.item.repoName }}</span>
+        <button v-if="props.isDeletable" class="p-link ml-2" @click="emit('delete', props.item.repoName)">
           <span class="pi pi-times"></span>
         </button>
       </div>

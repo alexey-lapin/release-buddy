@@ -1,6 +1,6 @@
 import type Module from '@/model/Module'
 
 export default interface Repo {
-  name: string
+  repoName: string
   modules: Module[]
 }

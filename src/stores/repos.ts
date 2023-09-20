@@ -6,16 +6,16 @@ import type SelectableItem from '@/model/SelectableItem'
 
 export const useReposStore = defineStore('repos', () => {
     const repos: Ref<Repo[]> = ref([
-        {name: 'repo_domain', modules: [{name: 'domain', type: 'LIB', dependencies: []}]},
+        {repoName: 'repo_domain', modules: [{name: 'domain', type: 'LIB', dependencies: []}]},
         {
-            name: 'repo_cache',
+            repoName: 'repo_cache',
             modules: [
                 {name: 'cache-man-center', type: 'APP', dependencies: []},
                 {name: 'cache-server', type: 'APP', dependencies: ["com.example:domain"]}
             ]
         },
         {
-            name: 'repo_query',
+            repoName: 'repo_query',
             modules: [
                 {name: 'query-core', type: 'LIB', dependencies: []},
                 {name: 'query-service', type: 'APP', dependencies: ["com.exmaple:query-core", "com.example:domain"]}
@@ -40,17 +40,17 @@ export const useReposStore = defineStore('repos', () => {
                         ? 'LIB'
                         : 'MIX'
             items.push({
-                name: repo.name,
+                name: repo.repoName,
                 itemType: 'REP',
                 componentType: componentType,
-                repo: repo.name
+                repo: repo.repoName
             })
             repo.modules.forEach((module) => {
                 items.push({
                     name: module.name,
                     itemType: module.type,
                     componentType: module.type,
-                    repo: repo.name
+                    repo: repo.repoName
                 })
             })
         })
@@ -59,7 +59,7 @@ export const useReposStore = defineStore('repos', () => {
     })
 
     const getRepoByName = (name: string) => {
-        return repos.value.find((repo) => repo.name === name)
+        return repos.value.find((repo) => repo.repoName === name)
     }
 
     return {repos, selectableItems, getRepoByName}

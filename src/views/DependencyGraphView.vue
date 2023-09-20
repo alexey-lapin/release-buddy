@@ -40,20 +40,20 @@ const autoCompleteSearch = (event: AutoCompleteCompleteEvent) => {
     ? [
         ...reposStore.selectableItems
           .filter(
-            (item) => !selectedItems.value.some((selectedItem) => selectedItem.name === item.repo)
+            (item) => !selectedItems.value.some((selectedItem) => selectedItem.repoName === item.repo)
           )
           .filter((item) => item.name.includes(event.query))
       ]
     : [
         ...reposStore.selectableItems.filter(
-          (item) => !selectedItems.value.some((selectedItem) => selectedItem.name === item.repo)
+          (item) => !selectedItems.value.some((selectedItem) => selectedItem.repoName === item.repo)
         )
       ]
 }
 
 const autoCompleteSelect = (event: AutoCompleteItemSelectEvent) => {
   selectedItems.value.push(reposStore.getRepoByName(event.value.repo)!)
-  selectedItems.value.sort((a, b) => a.name.localeCompare(b.name))
+  selectedItems.value.sort((a, b) => a.repoName.localeCompare(b.repoName))
   autoComplete.value = ''
   syncSelectedItems(selectedItems.value)
 }
@@ -64,14 +64,14 @@ const onClear = () => {
 }
 
 const onItemDelete = (name: string) => {
-  selectedItems.value = selectedItems.value.filter((item) => item.name !== name)
+  selectedItems.value = selectedItems.value.filter((item) => item.repoName !== name)
   syncSelectedItems(selectedItems.value)
 }
 
 const syncSelectedItems = (repos: Repo[]) => {
   preferencesStore.selectedRepos = repos.map((repo) => {
     return {
-      name: repo.name
+      name: repo.repoName
     }
   })
   plan.value = createBuildPlan(
@@ -128,7 +128,7 @@ const getTagClass = (item: SelectableItem) => {
       <div class="flex flex-wrap gap-2">
         <RepoItem
           v-for="item in selectedItems"
-          :key="item.name"
+          :key="item.repoName"
           :item="item"
           :isDeletable="true"
           @delete="onItemDelete"
@@ -147,7 +147,7 @@ const getTagClass = (item: SelectableItem) => {
           <div class="flex flex-wrap gap-2">
             <RepoItem
                 v-for="repo in item.repos"
-                :key="repo.name"
+                :key="repo.repoName"
                 :item="repo"
                 :isDeletable="false"
             />
