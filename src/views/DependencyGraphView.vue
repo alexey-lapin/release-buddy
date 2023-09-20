@@ -1,18 +1,22 @@
 <script setup lang="ts">
-import type { AutoCompleteCompleteEvent, AutoCompleteItemSelectEvent } from 'primevue/autocomplete'
+import type {AutoCompleteCompleteEvent, AutoCompleteItemSelectEvent} from 'primevue/autocomplete'
 import AutoComplete from 'primevue/autocomplete'
-import Panel from 'primevue/panel'
-import type { Ref } from 'vue'
-import { ref } from 'vue'
-import Tag from 'primevue/tag'
-import RepoItem from '@/components/RepoItem.vue'
+import type {Ref} from 'vue'
+import {ref, watch} from 'vue'
 import type Repo from '@/model/Repo'
-import { useReposStore } from '@/stores/repos'
 import type SelectableItem from '@/model/SelectableItem'
-import { usePreferencesStore } from '@/stores/preferences'
 import type PersistedSelectedRepo from '@/model/PersistedSelectedRepo'
 import type PhasedPlan from '@/model/PhasedPlan'
-import { createBuildPlan } from '@/service/BuildGraph'
+import InputSwitch from 'primevue/inputswitch'
+import Panel from 'primevue/panel'
+import Tag from 'primevue/tag'
+
+import SelectedRepoItem from '@/components/SelectedRepoItem.vue'
+import GraphRepoItem from '@/components/GraphRepoItem.vue'
+import {useReposStore} from '@/stores/repos'
+import {usePreferencesStore} from '@/stores/preferences'
+import {createBuildPlan} from '@/service/BuildGraph'
+
 
 const autoComplete = ref('')
 
@@ -21,8 +25,12 @@ const preferencesStore = usePreferencesStore()
 
 const autoCompleteItems: Ref<SelectableItem[]> = ref([])
 const selectedItems: Ref<Repo[]> = ref([])
-
+const isTextViewMode: Ref<boolean> = ref(preferencesStore.dependencyGraphViewMode === 'TEXT')
 const plan: Ref<PhasedPlan[]> = ref([])
+
+watch(isTextViewMode, (newValue) => {
+  preferencesStore.dependencyGraphViewMode = newValue ? 'TEXT' : 'ITEMS'
+})
 
 preferencesStore.selectedRepos.map((repo: PersistedSelectedRepo) => {
   const repoItem = reposStore.getRepoByName(repo.name)
@@ -31,22 +39,22 @@ preferencesStore.selectedRepos.map((repo: PersistedSelectedRepo) => {
   }
 })
 plan.value = createBuildPlan(
-  reposStore.repos,
-  selectedItems.value.flatMap((item) => item.modules.map((m) => m.name))
+    reposStore.repos,
+    selectedItems.value.flatMap((item) => item.modules.map((m) => m.name))
 )
 
 const autoCompleteSearch = (event: AutoCompleteCompleteEvent) => {
   autoCompleteItems.value = event.query
-    ? [
+      ? [
         ...reposStore.selectableItems
-          .filter(
-            (item) => !selectedItems.value.some((selectedItem) => selectedItem.repoName === item.repo)
-          )
-          .filter((item) => item.name.includes(event.query))
+            .filter(
+                (item) => !selectedItems.value.some((selectedItem) => selectedItem.repoName === item.repo)
+            )
+            .filter((item) => item.name.includes(event.query))
       ]
-    : [
+      : [
         ...reposStore.selectableItems.filter(
-          (item) => !selectedItems.value.some((selectedItem) => selectedItem.repoName === item.repo)
+            (item) => !selectedItems.value.some((selectedItem) => selectedItem.repoName === item.repo)
         )
       ]
 }
@@ -75,10 +83,9 @@ const syncSelectedItems = (repos: Repo[]) => {
     }
   })
   plan.value = createBuildPlan(
-    reposStore.repos,
-    selectedItems.value.flatMap((item) => item.modules.map((m) => m.name))
+      reposStore.repos,
+      selectedItems.value.flatMap((item) => item.modules.map((m) => m.name))
   )
-  console.log(plan.value)
 }
 
 const getTagClass = (item: SelectableItem) => {
@@ -99,19 +106,19 @@ const getTagClass = (item: SelectableItem) => {
   <div>
     <span class="mt-4 p-float-label">
       <AutoComplete
-        inputId="ac"
-        v-model="autoComplete"
-        :suggestions="autoCompleteItems"
-        optionLabel="name"
-        :dropdown="true"
-        @complete="autoCompleteSearch"
-        @item-select="autoCompleteSelect"
-        forceSelection
+          inputId="ac"
+          v-model="autoComplete"
+          :suggestions="autoCompleteItems"
+          optionLabel="name"
+          :dropdown="true"
+          @complete="autoCompleteSearch"
+          @item-select="autoCompleteSelect"
+          forceSelection
       >
         <template #option="slotProps">
           <div>
             <Tag :class="getTagClass(slotProps.option)"
-              ><p class="mono">{{ slotProps.option.itemType }}</p></Tag
+            ><p class="mono">{{ slotProps.option.itemType }}</p></Tag
             >
             {{ slotProps.option.name }}
           </div>
@@ -126,32 +133,39 @@ const getTagClass = (item: SelectableItem) => {
         </button>
       </template>
       <div class="flex flex-wrap gap-2">
-        <RepoItem
-          v-for="item in selectedItems"
-          :key="item.repoName"
-          :item="item"
-          :isDeletable="true"
-          @delete="onItemDelete"
+        <SelectedRepoItem
+            v-for="item in selectedItems"
+            :key="item.repoName"
+            :item="item"
+            :isDeletable="true"
+            @delete="onItemDelete"
         />
       </div>
     </Panel>
     <Panel class="mt-2" header="Repo dependency graph">
       <template #icons>
-        <button class="p-panel-header-icon mr-2">
-          <span class="pi pi-cog"></span>
-        </button>
+        <div class="flex justify-content-center gap-2">
+          <label for="ingredient1" class="ml-2">Text Mode</label>
+          <InputSwitch inputId="ingredient1" v-model="isTextViewMode"/>
+        </div>
       </template>
-      <div class="flex flex-column gap-2">
+      <div v-if="preferencesStore.dependencyGraphViewMode === 'ITEMS'" class="flex flex-column gap-2">
         <div v-for="item in plan" :key="item.phase">
           <h2 class="mb-1">Stage {{ item.phase }}</h2>
           <div class="flex flex-wrap gap-2">
-            <RepoItem
+            <GraphRepoItem
                 v-for="repo in item.repos"
                 :key="repo.repoName"
                 :item="repo"
                 :isDeletable="false"
             />
           </div>
+        </div>
+      </div>
+      <div v-if="preferencesStore.dependencyGraphViewMode === 'TEXT'">
+        <div v-for="item in plan" :key="item.phase">
+          <p>Stage {{ item.phase }}</p>
+          <p v-for="repo in item.repos" :key="repo.repoName">{{ repo.repoName }}</p>
         </div>
       </div>
     </Panel>
