@@ -16,76 +16,33 @@ import GraphRepoItem from '@/components/GraphRepoItem.vue'
 import {useReposStore} from '@/stores/repos'
 import {usePreferencesStore} from '@/stores/preferences'
 import {createBuildPlan} from '@/service/BuildGraph'
+import ModuleInfo from "@/components/ModuleInfo.vue";
+import type Module from "@/model/Module";
 
 
 const autoComplete = ref('')
+const selectedModule: Ref<Module> = ref(null)
 
 const reposStore = useReposStore()
-const preferencesStore = usePreferencesStore()
 
 const autoCompleteItems: Ref<SelectableItem[]> = ref([])
-const selectedItems: Ref<Repo[]> = ref([])
-const isTextViewMode: Ref<boolean> = ref(preferencesStore.dependencyGraphViewMode === 'TEXT')
-const plan: Ref<PhasedPlan[]> = ref([])
-
-watch(isTextViewMode, (newValue) => {
-  preferencesStore.dependencyGraphViewMode = newValue ? 'TEXT' : 'ITEMS'
-})
-
-preferencesStore.selectedRepos.map((repo: PersistedSelectedRepo) => {
-  const repoItem = reposStore.getRepoByName(repo.name)
-  if (repoItem) {
-    selectedItems.value.push(repoItem)
-  }
-})
-plan.value = createBuildPlan(
-    reposStore.repos,
-    selectedItems.value.flatMap((item) => item.modules.map((m) => m.name))
-)
 
 const autoCompleteSearch = (event: AutoCompleteCompleteEvent) => {
-  autoCompleteItems.value = event.query
-      ? [
-        ...reposStore.selectableItems
-            .filter(
-                (item) => !selectedItems.value.some((selectedItem) => selectedItem.repoName === item.repo)
-            )
-            .filter((item) => item.name.includes(event.query))
-      ]
-      : [
-        ...reposStore.selectableItems.filter(
-            (item) => !selectedItems.value.some((selectedItem) => selectedItem.repoName === item.repo)
-        )
-      ]
+  autoCompleteItems.value = [
+    ...reposStore.selectableItems
+        .filter((item) => item.itemType !== 'REP')
+        .filter((item) => item.name.includes(event.query))
+  ]
 }
 
 const autoCompleteSelect = (event: AutoCompleteItemSelectEvent) => {
-  selectedItems.value.push(reposStore.getRepoByName(event.value.repo)!)
-  selectedItems.value.sort((a, b) => a.repoName.localeCompare(b.repoName))
-  autoComplete.value = ''
-  syncSelectedItems(selectedItems.value)
+  const repo = reposStore.getRepoByName(event.value.repo)!;
+  selectedModule.value = repo.modules.find((module) => module.name === event.value.name)
 }
 
 const onClear = () => {
-  selectedItems.value = []
-  syncSelectedItems(selectedItems.value)
-}
-
-const onItemDelete = (name: string) => {
-  selectedItems.value = selectedItems.value.filter((item) => item.repoName !== name)
-  syncSelectedItems(selectedItems.value)
-}
-
-const syncSelectedItems = (repos: Repo[]) => {
-  preferencesStore.selectedRepos = repos.map((repo) => {
-    return {
-      name: repo.repoName
-    }
-  })
-  plan.value = createBuildPlan(
-      reposStore.repos,
-      selectedItems.value.flatMap((item) => item.modules.map((m) => m.name))
-  )
+  autoComplete.value = ''
+  selectedModule.value = null
 }
 
 const getTagClass = (item: SelectableItem) => {
@@ -124,23 +81,15 @@ const getTagClass = (item: SelectableItem) => {
           </div>
         </template>
       </AutoComplete>
-      <label for="ac">Enter repo or module</label>
+      <label for="ac">Select module</label>
     </span>
-    <Panel class="mt-2" header="Selected repos">
+    <Panel class="mt-2" header="Module info">
       <template #icons>
         <button class="p-panel-header-icon mr-2" @click="onClear">
           <span class="pi pi-trash"></span>
         </button>
       </template>
-      <div class="flex flex-wrap gap-2">
-        <SelectedRepoItem
-            v-for="item in selectedItems"
-            :key="item.repoName"
-            :item="item"
-            :isDeletable="true"
-            @delete="onItemDelete"
-        />
-      </div>
+      <ModuleInfo v-if="selectedModule" :module="selectedModule"/>
     </Panel>
 
   </div>

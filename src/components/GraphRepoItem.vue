@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type Repo from '@/model/Repo'
-import type Module from "@/model/Module";
-import type {Ref} from 'vue'
-import {ref} from "vue";
+import type Module from '@/model/Module'
+import type { Ref } from 'vue'
+import { ref } from 'vue'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Dialog from 'primevue/dialog'
-import {SOURCE_BASE_URL, BUILD_BASE_URL} from "@/service/Env";
+import { BUILD_BASE_URL, SOURCE_BASE_URL } from '@/service/Env'
+import ModuleInfo from '@/components/ModuleInfo.vue'
 
 const props = defineProps<{
   item: Repo
@@ -38,7 +39,11 @@ const getModuleClass = (module: Module) => {
     <template #title>
       <div class="flex">
         <span class="flex-grow-1">{{ props.item.repoName }}</span>
-        <button v-if="props.isDeletable" class="p-link ml-2" @click="emit('delete', props.item.repoName)">
+        <button
+          v-if="props.isDeletable"
+          class="p-link ml-2"
+          @click="emit('delete', props.item.repoName)"
+        >
           <span class="pi pi-times"></span>
         </button>
       </div>
@@ -52,52 +57,21 @@ const getModuleClass = (module: Module) => {
     <template #content>
       <div class="flex flex-wrap gap-2">
         <div v-for="module in props.item.modules" :key="module.name">
-          <div class="p-2 border-round" :class="getModuleClass(module)"
-               @click="showModal(module)">{{
-              module.name
-            }}
+          <div class="p-2 border-round" :class="getModuleClass(module)" @click="showModal(module)">
+            {{ module.name }}
           </div>
         </div>
       </div>
     </template>
   </Card>
-  <Dialog v-model:visible="modalVisible" modal :dismissableMask="true" header="Module info" :style="{ width: '50vw' }">
-    <table class="table-auto">
-      <tbody>
-      <tr>
-        <td class="font-bold">Name</td>
-        <td>{{ modalModule?.name }}</td>
-      </tr>
-      <tr>
-        <td class="font-bold">Type</td>
-        <td>{{ modalModule?.type }}</td>
-      </tr>
-      <tr>
-        <td class="font-bold">Is Root</td>
-        <td>{{ modalModule?.isRoot }}</td>
-      </tr>
-      <tr>
-        <td class="font-bold">Template</td>
-        <td>{{ modalModule?.template }}</td>
-      </tr>
-      <tr>
-        <td class="font-bold">Main</td>
-        <td>{{ modalModule?.main }}</td>
-      </tr>
-      <tr>
-        <td class="font-bold">Image Type</td>
-        <td>{{ modalModule?.imageType }}</td>
-      </tr>
-      <tr>
-        <td class="font-bold">Dependencies</td>
-        <td>
-          <ul>
-            <li v-for="dep in modalModule?.dependencies" :key="dep">{{ dep }}</li>
-          </ul>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+  <Dialog
+    v-model:visible="modalVisible"
+    modal
+    :dismissableMask="true"
+    header="Module info"
+    :style="{ width: '50vw' }"
+  >
+    <ModuleInfo :module="modalModule" />
   </Dialog>
 </template>
 

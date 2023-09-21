@@ -124,7 +124,7 @@ const getTagClass = (item: SelectableItem) => {
           </div>
         </template>
       </AutoComplete>
-      <label for="ac">Enter repo or module</label>
+      <label for="ac">Select repo or module</label>
     </span>
     <Panel class="mt-2" header="Selected repos">
       <template #icons>
