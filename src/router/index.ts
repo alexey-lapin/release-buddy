@@ -1,5 +1,6 @@
 import {createRouter, createWebHashHistory, createWebHistory} from 'vue-router'
 import DependencyGraphView from '@/views/DependencyGraphView.vue'
+import DependencyInfoView from '@/views/DependencyInfoView.vue'
 
 const router = createRouter({
     history: import.meta.env.VITE_APP_HISTORY === "hash"
@@ -9,12 +10,17 @@ const router = createRouter({
         {
             path: '/',
             name: 'home',
-            redirect: '/dependency-graph'
+            redirect: '/dependency-build-graph'
         },
         {
-            path: '/dependency-graph',
-            name: 'dependency graph',
+            path: '/dependency-build-graph',
+            name: 'dependency build graph',
             component: DependencyGraphView
+        },
+        {
+            path: '/dependency-info',
+            name: 'dependency info',
+            component: DependencyInfoView
         }
     ]
 })

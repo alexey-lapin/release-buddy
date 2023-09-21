@@ -142,33 +142,7 @@ const getTagClass = (item: SelectableItem) => {
         />
       </div>
     </Panel>
-    <Panel class="mt-2" header="Repo dependency build graph">
-      <template #icons>
-        <div class="flex justify-content-center gap-2">
-          <label for="ingredient1" class="ml-2">Text Mode</label>
-          <InputSwitch inputId="ingredient1" v-model="isTextViewMode"/>
-        </div>
-      </template>
-      <div v-if="preferencesStore.dependencyGraphViewMode === 'ITEMS'" class="flex flex-column gap-2">
-        <div v-for="item in plan" :key="item.phase">
-          <h2 class="mb-1">Stage {{ item.phase }}</h2>
-          <div class="flex flex-wrap gap-2">
-            <GraphRepoItem
-                v-for="repo in item.repos"
-                :key="repo.repoName"
-                :item="repo"
-                :isDeletable="false"
-            />
-          </div>
-        </div>
-      </div>
-      <div v-if="preferencesStore.dependencyGraphViewMode === 'TEXT'">
-        <div v-for="item in plan" :key="item.phase">
-          <p>Stage {{ item.phase }}</p>
-          <p v-for="repo in item.repos" :key="repo.repoName">{{ repo.repoName }}</p>
-        </div>
-      </div>
-    </Panel>
+
   </div>
 </template>
 

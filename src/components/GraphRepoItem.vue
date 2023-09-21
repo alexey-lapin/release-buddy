@@ -6,6 +6,7 @@ import {ref} from "vue";
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Dialog from 'primevue/dialog'
+import {SOURCE_BASE_URL, BUILD_BASE_URL} from "@/service/Env";
 
 const props = defineProps<{
   item: Repo
@@ -44,8 +45,8 @@ const getModuleClass = (module: Module) => {
     </template>
     <template #subtitle>
       <div class="flex gap-1">
-        <a href="">source</a>
-        <a href="">build</a>
+        <a :href="`${SOURCE_BASE_URL}/${props.item.repoName}`" target="_blank">source</a>
+        <a :href="`${BUILD_BASE_URL}/${props.item.repoName}`" target="_blank">build</a>
       </div>
     </template>
     <template #content>
