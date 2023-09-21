@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Module from "@/model/Module";
+import type Module from "@/model/Module";
 
 const props = defineProps<{
   module: Module

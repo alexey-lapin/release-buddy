@@ -71,7 +71,7 @@ const getModuleClass = (module: Module) => {
     header="Module info"
     :style="{ width: '50vw' }"
   >
-    <ModuleInfo :module="modalModule" />
+    <ModuleInfo v-if="modalModule" :module="modalModule" />
   </Dialog>
 </template>
 

@@ -21,7 +21,7 @@ import type Module from "@/model/Module";
 
 
 const autoComplete = ref('')
-const selectedModule: Ref<Module> = ref(null)
+const selectedModule: Ref<Module | null> = ref(null)
 
 const reposStore = useReposStore()
 
@@ -37,7 +37,7 @@ const autoCompleteSearch = (event: AutoCompleteCompleteEvent) => {
 
 const autoCompleteSelect = (event: AutoCompleteItemSelectEvent) => {
   const repo = reposStore.getRepoByName(event.value.repo)!;
-  selectedModule.value = repo.modules.find((module) => module.name === event.value.name)
+  selectedModule.value = repo.modules.find((module) => module.name === event.value.name) ?? null
 }
 
 const onClear = () => {
