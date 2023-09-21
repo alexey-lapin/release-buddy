@@ -1,6 +1,8 @@
+import type { ItemType, ComponentType } from '@/model/AliasTypes'
+
 export default interface SelectableItem {
     name: string
-    itemType: "LIB" | "APP" | "REP"
-    componentType: "LIB" | "APP" | "MIX"
+    itemType: ItemType
+    componentType: ComponentType
     repo: string
 }

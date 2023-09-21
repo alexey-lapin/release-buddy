@@ -1,22 +1,21 @@
 <script setup lang="ts">
-import type {AutoCompleteCompleteEvent, AutoCompleteItemSelectEvent} from 'primevue/autocomplete'
+import type { AutoCompleteCompleteEvent, AutoCompleteItemSelectEvent } from 'primevue/autocomplete'
 import AutoComplete from 'primevue/autocomplete'
-import type {Ref} from 'vue'
-import {ref, watch} from 'vue'
+import type { Ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type Repo from '@/model/Repo'
 import type SelectableItem from '@/model/SelectableItem'
 import type PersistedSelectedRepo from '@/model/PersistedSelectedRepo'
 import type PhasedPlan from '@/model/PhasedPlan'
 import InputSwitch from 'primevue/inputswitch'
 import Panel from 'primevue/panel'
-import Tag from 'primevue/tag'
 
 import SelectedRepoItem from '@/components/SelectedRepoItem.vue'
 import GraphRepoItem from '@/components/GraphRepoItem.vue'
-import {useReposStore} from '@/stores/repos'
-import {usePreferencesStore} from '@/stores/preferences'
-import {createBuildPlan} from '@/service/BuildGraph'
-
+import { useReposStore } from '@/stores/repos'
+import { usePreferencesStore } from '@/stores/preferences'
+import { createBuildPlan } from '@/service/BuildGraph'
+import ItemTypeTag from '@/components/ItemTypeTag.vue'
 
 const autoComplete = ref('')
 
@@ -27,6 +26,13 @@ const autoCompleteItems: Ref<SelectableItem[]> = ref([])
 const selectedItems: Ref<Repo[]> = ref([])
 const isTextViewMode: Ref<boolean> = ref(preferencesStore.dependencyGraphViewMode === 'TEXT')
 const plan: Ref<PhasedPlan[]> = ref([])
+
+const planReposCount = computed(() => {
+  return plan.value.flatMap((item) => item.repos).length
+})
+const planModulesCount = computed(() => {
+  return plan.value.flatMap((item) => item.repos).flatMap((repo) => repo.modules).length
+})
 
 watch(isTextViewMode, (newValue) => {
   preferencesStore.dependencyGraphViewMode = newValue ? 'TEXT' : 'ITEMS'
@@ -39,22 +45,23 @@ preferencesStore.selectedRepos.map((repo: PersistedSelectedRepo) => {
   }
 })
 plan.value = createBuildPlan(
-    reposStore.repos,
-    selectedItems.value.flatMap((item) => item.modules.map((m) => m.name))
+  reposStore.repos,
+  selectedItems.value.flatMap((item) => item.modules.map((m) => m.name))
 )
 
 const autoCompleteSearch = (event: AutoCompleteCompleteEvent) => {
   autoCompleteItems.value = event.query
-      ? [
+    ? [
         ...reposStore.selectableItems
-            .filter(
-                (item) => !selectedItems.value.some((selectedItem) => selectedItem.repoName === item.repo)
-            )
-            .filter((item) => item.name.includes(event.query))
+          .filter(
+            (item) =>
+              !selectedItems.value.some((selectedItem) => selectedItem.repoName === item.repo)
+          )
+          .filter((item) => item.name.includes(event.query))
       ]
-      : [
+    : [
         ...reposStore.selectableItems.filter(
-            (item) => !selectedItems.value.some((selectedItem) => selectedItem.repoName === item.repo)
+          (item) => !selectedItems.value.some((selectedItem) => selectedItem.repoName === item.repo)
         )
       ]
 }
@@ -83,22 +90,9 @@ const syncSelectedItems = (repos: Repo[]) => {
     }
   })
   plan.value = createBuildPlan(
-      reposStore.repos,
-      selectedItems.value.flatMap((item) => item.modules.map((m) => m.name))
+    reposStore.repos,
+    selectedItems.value.flatMap((item) => item.modules.map((m) => m.name))
   )
-}
-
-const getTagClass = (item: SelectableItem) => {
-  switch (item.componentType) {
-    case 'LIB':
-      return 'tag-lib'
-    case 'APP':
-      return 'tag-app'
-    case 'MIX':
-      return 'tag-mix'
-    default:
-      return ''
-  }
 }
 </script>
 
@@ -106,20 +100,21 @@ const getTagClass = (item: SelectableItem) => {
   <div>
     <span class="mt-4 p-float-label">
       <AutoComplete
-          inputId="ac"
-          v-model="autoComplete"
-          :suggestions="autoCompleteItems"
-          optionLabel="name"
-          :dropdown="true"
-          @complete="autoCompleteSearch"
-          @item-select="autoCompleteSelect"
-          forceSelection
+        inputId="ac"
+        v-model="autoComplete"
+        :suggestions="autoCompleteItems"
+        optionLabel="name"
+        :dropdown="true"
+        @complete="autoCompleteSearch"
+        @item-select="autoCompleteSelect"
+        forceSelection
       >
         <template #option="slotProps">
           <div>
-            <Tag :class="getTagClass(slotProps.option)"
-            ><p class="mono">{{ slotProps.option.itemType }}</p></Tag
-            >
+            <ItemTypeTag
+              :type="slotProps.option.componentType"
+              :label="slotProps.option.itemType"
+            />
             {{ slotProps.option.name }}
           </div>
         </template>
@@ -134,30 +129,38 @@ const getTagClass = (item: SelectableItem) => {
       </template>
       <div class="flex flex-wrap gap-2">
         <SelectedRepoItem
-            v-for="item in selectedItems"
-            :key="item.repoName"
-            :item="item"
-            :isDeletable="true"
-            @delete="onItemDelete"
+          v-for="item in selectedItems"
+          :key="item.repoName"
+          :item="item"
+          :isDeletable="true"
+          @delete="onItemDelete"
         />
       </div>
     </Panel>
-    <Panel class="mt-2" header="Repo dependency build graph">
+    <Panel class="mt-2" header="Repo dependency build stages">
       <template #icons>
         <div class="flex justify-content-center gap-2">
           <label for="ingredient1" class="ml-2">Text Mode</label>
-          <InputSwitch inputId="ingredient1" v-model="isTextViewMode"/>
+          <InputSwitch inputId="ingredient1" v-model="isTextViewMode" />
         </div>
       </template>
-      <div v-if="preferencesStore.dependencyGraphViewMode === 'ITEMS'" class="flex flex-column gap-2">
+      <div
+        v-if="preferencesStore.dependencyGraphViewMode === 'ITEMS'"
+        class="flex flex-column gap-2"
+      >
+        <div>
+          <h2>Summary</h2>
+          <h3>Repos: {{ planReposCount }}</h3>
+          <h3>Modules: {{ planModulesCount }}</h3>
+        </div>
         <div v-for="item in plan" :key="item.phase">
           <h2 class="mb-1">Stage {{ item.phase }}</h2>
           <div class="flex flex-wrap gap-2">
             <GraphRepoItem
-                v-for="repo in item.repos"
-                :key="repo.repoName"
-                :item="repo"
-                :isDeletable="false"
+              v-for="repo in item.repos"
+              :key="repo.repoName"
+              :item="repo"
+              :isDeletable="false"
             />
           </div>
         </div>
@@ -171,24 +174,3 @@ const getTagClass = (item: SelectableItem) => {
     </Panel>
   </div>
 </template>
-
-<style scoped>
-.mono {
-  font-family: monospace;
-}
-
-.tag-lib {
-  background: var(--yellow-500);
-  color: #fff;
-}
-
-.tag-app {
-  background: var(--cyan-500);
-  color: #fff;
-}
-
-.tag-mix {
-  background: linear-gradient(to right, var(--yellow-500), var(--cyan-500));
-  color: #fff;
-}
-</style>

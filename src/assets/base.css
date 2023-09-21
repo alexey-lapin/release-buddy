@@ -5,3 +5,10 @@
   margin: 0;
   font-weight: normal;
 }
+
+:root {
+  --rb-c-lib: #ff0b99;
+  --rb-c-lib-fade: #ff0b994d;
+  --rb-c-app: #2b7ddc;
+  --rb-c-app-fade: #2b7ddc4c;
+}

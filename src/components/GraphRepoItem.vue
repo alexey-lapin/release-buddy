@@ -1,13 +1,9 @@
 <script setup lang="ts">
 import type Repo from '@/model/Repo'
-import type Module from '@/model/Module'
-import type { Ref } from 'vue'
-import { ref } from 'vue'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
-import Dialog from 'primevue/dialog'
 import { BUILD_BASE_URL, SOURCE_BASE_URL } from '@/service/Env'
-import ModuleInfo from '@/components/ModuleInfo.vue'
+import ModuleItem from '@/components/ModuleItem.vue'
 
 const props = defineProps<{
   item: Repo
@@ -16,22 +12,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   delete: [name: string]
 }>()
-
-const modalVisible = ref(false)
-const modalModule: Ref<Module | null> = ref(null)
-const showModal = (module: Module) => {
-  modalVisible.value = true
-  modalModule.value = module
-}
-
-const getModuleClass = (module: Module) => {
-  if (module.type === 'APP') {
-    return ['module-app']
-  }
-  if (module.type === 'LIB') {
-    return ['module-lib']
-  }
-}
 </script>
 
 <template>
@@ -50,47 +30,20 @@ const getModuleClass = (module: Module) => {
     </template>
     <template #subtitle>
       <div class="flex gap-1">
-        <a :href="`${SOURCE_BASE_URL}/${props.item.repoName}`" target="_blank">source</a>
-        <a :href="`${BUILD_BASE_URL}/${props.item.repoName}`" target="_blank">build</a>
+        <a :href="`${SOURCE_BASE_URL}/${props.item.repoName}`" target="_blank">
+          <Button link label="source" icon="1pi 1pi-arrow-up-right" iconPos="right" class="p-0" />
+        </a>
+        <a :href="`${BUILD_BASE_URL}/${props.item.repoName}`" target="_blank">
+          <Button link label="build" icon="1pi 1pi-arrow-up-right" iconPos="right" class="p-0" />
+        </a>
       </div>
     </template>
     <template #content>
       <div class="flex flex-wrap gap-2">
         <div v-for="module in props.item.modules" :key="module.name">
-          <div class="p-2 border-round" :class="getModuleClass(module)" @click="showModal(module)">
-            {{ module.name }}
-          </div>
+          <ModuleItem :module="module" />
         </div>
       </div>
     </template>
   </Card>
-  <Dialog
-    v-model:visible="modalVisible"
-    modal
-    :dismissableMask="true"
-    header="Module info"
-    :style="{ width: '50vw' }"
-  >
-    <ModuleInfo v-if="modalModule" :module="modalModule" />
-  </Dialog>
 </template>
-
-<style scoped>
-.module-lib {
-  border: 3px solid var(--yellow-500);
-  cursor: pointer;
-}
-
-.module-lib:hover {
-  background: var(--yellow-200);
-}
-
-.module-app {
-  border: 3px solid var(--cyan-500);
-  cursor: pointer;
-}
-
-.module-app:hover {
-  background: var(--cyan-200);
-}
-</style>
