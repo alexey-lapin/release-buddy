@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 import type Repo from '@/model/Repo'
 import type SelectableItem from '@/model/SelectableItem'
 
-export const useReposStore = defineStore('repos', () => {
+export const useReposStore = defineStore('release-buddy-repos', () => {
   const repos: Ref<Repo[]> = ref([
     {
       repoName: 'repo_domain',

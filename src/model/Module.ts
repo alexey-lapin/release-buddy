@@ -2,8 +2,8 @@ export default interface Module {
   name: string
   type: 'LIB' | 'APP'
   isRoot: boolean
-  template?: string
-  main?: string
-  imageType?: string
+  template: string | null
+  main: string | null
+  imageType: string | null
   dependencies: string[]
 }
