@@ -27,6 +27,9 @@ const selectedItems: Ref<Repo[]> = ref([])
 const isTextViewMode: Ref<boolean> = ref(preferencesStore.dependencyGraphViewMode === 'TEXT')
 const plan: Ref<PhasedPlan[]> = ref([])
 
+const planStagesCount = computed(() => {
+  return plan.value.length
+})
 const planReposCount = computed(() => {
   return plan.value.flatMap((item) => item.repos).length
 })
@@ -148,8 +151,9 @@ const syncSelectedItems = (repos: Repo[]) => {
         v-if="preferencesStore.dependencyGraphViewMode === 'ITEMS'"
         class="flex flex-column gap-2"
       >
-        <div>
+        <div v-if="plan.length">
           <h2>Summary</h2>
+          <h3>Stages: {{ planStagesCount }}</h3>
           <h3>Repos: {{ planReposCount }}</h3>
           <h3>Modules: {{ planModulesCount }}</h3>
         </div>
@@ -166,6 +170,12 @@ const syncSelectedItems = (repos: Repo[]) => {
         </div>
       </div>
       <div v-if="preferencesStore.dependencyGraphViewMode === 'TEXT'">
+        <div v-if="plan.length">
+          <p>Stages: {{ planStagesCount }}</p>
+          <p>Repos: {{ planReposCount }}</p>
+          <p>Modules: {{ planModulesCount }}</p>
+          <p>---</p>
+        </div>
         <div v-for="item in plan" :key="item.phase">
           <p>Stage {{ item.phase }}</p>
           <p v-for="repo in item.repos" :key="repo.repoName">{{ repo.repoName }}</p>
