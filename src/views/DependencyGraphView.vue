@@ -79,6 +79,7 @@ const autoCompleteSelect = (event: AutoCompleteItemSelectEvent) => {
 const onClear = () => {
   selectedItems.value = []
   syncSelectedItems(selectedItems.value)
+  preferencesStore.unmarkAllRepos()
 }
 
 const onItemDelete = (name: string) => {
@@ -134,7 +135,7 @@ const syncSelectedItems = (repos: Repo[]) => {
         <SelectedRepoItem
           v-for="item in selectedItems"
           :key="item.repoName"
-          :item="item"
+          :repo="item"
           :isDeletable="true"
           @delete="onItemDelete"
         />
@@ -160,12 +161,7 @@ const syncSelectedItems = (repos: Repo[]) => {
         <div v-for="item in plan" :key="item.phase">
           <h2 class="mb-1">Stage {{ item.phase }}</h2>
           <div class="flex flex-wrap gap-2">
-            <GraphRepoItem
-              v-for="repo in item.repos"
-              :key="repo.repoName"
-              :item="repo"
-              :isDeletable="false"
-            />
+            <GraphRepoItem v-for="repo in item.repos" :key="repo.repoName" :repo="repo" />
           </div>
         </div>
       </div>
@@ -178,7 +174,9 @@ const syncSelectedItems = (repos: Repo[]) => {
         </div>
         <div v-for="item in plan" :key="item.phase">
           <p>Stage {{ item.phase }}</p>
-          <p v-for="repo in item.repos" :key="repo.repoName">{{ repo.repoName }}</p>
+          <p v-for="repo in item.repos" :key="repo.repoName">
+            {{ preferencesStore.isRepoMarked(repo.repoName) ? '+' : '-' }} {{ repo.repoName }}
+          </p>
         </div>
       </div>
     </Panel>

@@ -5,7 +5,7 @@ import Card from 'primevue/card'
 import ModuleItem from '@/components/ModuleItem.vue'
 
 const props = defineProps<{
-  item: Repo
+  repo: Repo
   isDeletable: boolean
 }>()
 const emit = defineEmits<{
@@ -17,11 +17,11 @@ const emit = defineEmits<{
   <Card class="border-1">
     <template #title>
       <div class="flex">
-        <span class="flex-grow-1">{{ props.item.repoName }}</span>
+        <span class="flex-grow-1">{{ props.repo.repoName }}</span>
         <button
           v-if="props.isDeletable"
           class="p-link ml-2"
-          @click="emit('delete', props.item.repoName)"
+          @click="emit('delete', props.repo.repoName)"
         >
           <span class="pi pi-times"></span>
         </button>
@@ -29,7 +29,7 @@ const emit = defineEmits<{
     </template>
     <template #content>
       <div class="flex flex-wrap gap-2">
-        <div v-for="module in props.item.modules" :key="module.name">
+        <div v-for="module in props.repo.modules" :key="module.name">
           <ModuleItem :module="module" />
         </div>
       </div>
