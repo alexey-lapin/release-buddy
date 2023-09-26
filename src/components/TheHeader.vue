@@ -28,7 +28,7 @@ const items: Ref<MenuItem[]> = ref([
   <div class="mt-3"></div>
   <header class="header">
     <div class="flex gap-2">
-      <h1>{{ APP_NAME }}</h1>
+      <h1 class="px-2" style="cursor: pointer;" @click="router.push('/')">{{ APP_NAME }}</h1>
       <TabMenu v-model:activeIndex="active" :model="items"/>
     </div>
   </header>
