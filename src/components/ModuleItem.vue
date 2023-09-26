@@ -2,7 +2,8 @@
 import ModuleInfo from '@/components/ModuleInfo.vue'
 import Dialog from 'primevue/dialog'
 import type Module from '@/model/Module'
-import { Ref, ref } from 'vue'
+import type { Ref } from 'vue'
+import { ref } from 'vue'
 
 const props = defineProps<{
   module: Module

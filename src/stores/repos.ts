@@ -9,23 +9,60 @@ export const useReposStore = defineStore('release-buddy-repos', () => {
   const repos: Ref<Repo[]> = ref([
     {
       repoName: 'repo_domain',
-      modules: [{ name: 'domain', type: 'LIB', isRoot: true, dependencies: [] }]
+      modules: [
+        {
+          name: 'domain',
+          type: 'LIB',
+          isRoot: true,
+          template: null,
+          main: null,
+          imageType: null,
+          dependencies: []
+        }
+      ]
     },
     {
       repoName: 'repo_cache',
       modules: [
-        { name: 'cache-man-center', type: 'APP', isRoot: false, dependencies: [] },
-        { name: 'cache-server', type: 'APP', isRoot: false, dependencies: ['com.example:domain'] }
+        {
+          name: 'cache-man-center',
+          type: 'APP',
+          isRoot: false,
+          template: null,
+          main: null,
+          imageType: null,
+          dependencies: []
+        },
+        {
+          name: 'cache-server',
+          type: 'APP',
+          isRoot: false,
+          template: null,
+          main: null,
+          imageType: null,
+          dependencies: ['com.example:domain']
+        }
       ]
     },
     {
       repoName: 'repo_query',
       modules: [
-        { name: 'query-core', type: 'LIB', isRoot: false, dependencies: [] },
+        {
+          name: 'query-core',
+          type: 'LIB',
+          isRoot: false,
+          template: null,
+          main: null,
+          imageType: null,
+          dependencies: []
+        },
         {
           name: 'query-service',
           type: 'APP',
           isRoot: false,
+          template: null,
+          main: null,
+          imageType: null,
           dependencies: ['com.exmaple:query-core', 'com.example:domain']
         }
       ]

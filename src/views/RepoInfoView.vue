@@ -44,7 +44,7 @@ const onClearFilters = () => {
 }
 
 const onExpandAll = () => {
-  expandedKeys.value = nodes.reduce((acc, node) => {
+  expandedKeys.value = nodes.reduce((acc: { [key: string]: boolean; }, node) => {
     acc[node.key] = true
     return acc
   }, {})
