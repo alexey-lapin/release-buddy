@@ -87,6 +87,16 @@ const onItemDelete = (name: string) => {
   syncSelectedItems(selectedItems.value)
 }
 
+const onMarkAll = () => {
+  plan.value.flatMap((item) => item.repos).forEach((repo) => {
+    preferencesStore.markRepo(repo.repoName)
+  })
+}
+
+const onUnmarkAll = () => {
+  preferencesStore.unmarkAllRepos()
+}
+
 const syncSelectedItems = (repos: Repo[]) => {
   preferencesStore.selectedRepos = repos.map((repo) => {
     return {
@@ -143,8 +153,14 @@ const syncSelectedItems = (repos: Repo[]) => {
     </Panel>
     <Panel class="mt-2" header="Repo dependency build stages">
       <template #icons>
-        <div class="flex justify-content-center gap-2">
-          <label for="ingredient1" class="ml-2">Text Mode</label>
+        <div class="flex  gap-1">
+          <button class="p-panel-header-icon mr-2" @click="onMarkAll">
+            <span class="pi pi-check"></span>
+          </button>
+          <button class="p-panel-header-icon mr-2" @click="onUnmarkAll">
+            <span class="pi pi-times"></span>
+          </button>
+          <label for="ingredient1" class="pt-1">Text Mode</label>
           <InputSwitch inputId="ingredient1" v-model="isTextViewMode" />
         </div>
       </template>

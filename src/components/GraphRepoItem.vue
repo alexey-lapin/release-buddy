@@ -16,6 +16,10 @@ const preferencesStore = usePreferencesStore()
 
 const checked = ref(preferencesStore.isRepoMarked(props.repo.repoName))
 
+watch(() => preferencesStore.isRepoMarked(props.repo.repoName), (newValue) => {
+  checked.value = newValue
+})
+
 watch(checked, (newValue) => {
   if (newValue) {
     preferencesStore.markRepo(props.repo.repoName)
