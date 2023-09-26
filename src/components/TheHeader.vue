@@ -17,9 +17,9 @@ const items: Ref<MenuItem[]> = ref([
     to: '/dependency-build-graph'
   },
   {
-    label: 'Module Info',
+    label: 'Repo Info',
     icon: 'pi pi-fw pi-info',
-    to: '/module-info'
+    to: '/repo-info'
   }
 ])
 </script>

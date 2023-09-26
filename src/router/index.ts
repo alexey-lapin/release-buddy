@@ -1,6 +1,6 @@
 import {createRouter, createWebHashHistory, createWebHistory} from 'vue-router'
 import DependencyGraphView from '@/views/DependencyGraphView.vue'
-import ModuleInfoView from '@/views/ModuleInfoView.vue'
+import RepoInfoView from '@/views/RepoInfoView.vue'
 
 const router = createRouter({
     history: import.meta.env.VITE_APP_HISTORY === "hash"
@@ -18,9 +18,9 @@ const router = createRouter({
             component: DependencyGraphView
         },
         {
-            path: '/module-info',
-            name: 'module info',
-            component: ModuleInfoView
+            path: '/repo-info',
+            name: 'repo info',
+            component: RepoInfoView
         }
     ]
 })
