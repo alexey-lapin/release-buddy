@@ -29,7 +29,7 @@ export const useReposStore = defineStore('release-buddy-repos', () => {
           type: 'APP',
           isRoot: false,
           template: null,
-          main: null,
+          main: "com.example.some.other.package.and.another.nested.TheLongApplicationNameClass",
           imageType: null,
           dependencies: []
         },

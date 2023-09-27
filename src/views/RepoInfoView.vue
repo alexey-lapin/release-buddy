@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, ref} from 'vue'
+import { computed, ref } from 'vue'
 import { useReposStore } from '@/stores/repos'
 import TreeTable from 'primevue/treetable'
 import Button from 'primevue/button'
@@ -9,6 +9,7 @@ import ItemTypeTag from '@/components/ItemTypeTag.vue'
 import TriStateCheckbox from 'primevue/tristatecheckbox'
 import Dropdown from 'primevue/dropdown'
 import MultiSelect from 'primevue/multiselect'
+import ScrollTop from 'primevue/scrolltop'
 
 const reposStore = useReposStore()
 
@@ -34,8 +35,11 @@ const columns = [
 ]
 const selectedColumns = ref(['itemType', 'dependencies'])
 
+const totalRepos = computed(() => nodes.length)
+const totalModules = computed(() => nodes.flatMap((node) => node.data.modules).length)
+
 const isRootFilter = computed({
-  get: () => filters.value.isRoot == '' ? null : filters.value.isRoot === 'true',
+  get: () => (filters.value.isRoot == '' ? null : filters.value.isRoot === 'true'),
   set: (newValue) => {
     filters.value.isRoot = newValue == null ? '' : newValue.toString()
   }
@@ -57,6 +61,7 @@ const onCollapseAll = () => {
 </script>
 
 <template>
+  <ScrollTop />
   <TreeTable
     v-model:filters="filters"
     :value="nodes"
@@ -97,11 +102,7 @@ const onCollapseAll = () => {
               :type="slotProps.option"
               :label="slotProps.option"
             />
-            <ItemTypeTag
-                v-else
-                type="NONE"
-                label="NONE"
-            />
+            <ItemTypeTag v-else type="NONE" label="NONE" />
           </template>
           <template #value="slotProps">
             <ItemTypeTag v-if="slotProps.value" :type="slotProps.value" :label="slotProps.value" />
@@ -135,6 +136,9 @@ const onCollapseAll = () => {
       <template #filter>
         <InputText v-model="filters['template']" type="text" class="p-column-filter w-full" />
       </template>
+      <template #body="slotProps">
+        <span class="long-text">{{ slotProps.node.data.template }}</span>
+      </template>
     </Column>
     <Column
       v-if="selectedColumns.includes('main')"
@@ -144,6 +148,9 @@ const onCollapseAll = () => {
     >
       <template #filter>
         <InputText v-model="filters['main']" type="text" class="p-column-filter w-full" />
+      </template>
+      <template #body="slotProps">
+        <p class="long-text">{{ slotProps.node.data.main }}</p>
       </template>
     </Column>
     <Column
@@ -157,12 +164,13 @@ const onCollapseAll = () => {
       </template>
       <template #body="slotProps">
         <ul v-if="slotProps.node.data.dependencies" class="dependency-list">
-          <li v-for="dep in slotProps.node.data.dependencies" :key="dep" class="dependency-item">
+          <li v-for="dep in slotProps.node.data.dependencies" :key="dep" class="long-text">
             {{ dep }}
           </li>
         </ul>
       </template>
     </Column>
+    <template #footer> Total: {{ totalRepos }} repos, {{ totalModules }} modules</template>
   </TreeTable>
 </template>
 
@@ -171,12 +179,13 @@ const onCollapseAll = () => {
   list-style-position: inside;
 }
 
-.dependency-item {
+.long-text {
   overflow: clip;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.dependency-item:hover {
+.long-text:hover {
   word-break: break-all;
   white-space: normal;
 }

@@ -9,6 +9,7 @@ import type PersistedSelectedRepo from '@/model/PersistedSelectedRepo'
 import type PhasedPlan from '@/model/PhasedPlan'
 import InputSwitch from 'primevue/inputswitch'
 import Panel from 'primevue/panel'
+import ScrollTop from 'primevue/scrolltop'
 
 import SelectedRepoItem from '@/components/SelectedRepoItem.vue'
 import GraphRepoItem from '@/components/GraphRepoItem.vue'
@@ -88,9 +89,11 @@ const onItemDelete = (name: string) => {
 }
 
 const onMarkAll = () => {
-  plan.value.flatMap((item) => item.repos).forEach((repo) => {
-    preferencesStore.markRepo(repo.repoName)
-  })
+  plan.value
+    .flatMap((item) => item.repos)
+    .forEach((repo) => {
+      preferencesStore.markRepo(repo.repoName)
+    })
 }
 
 const onUnmarkAll = () => {
@@ -111,6 +114,7 @@ const syncSelectedItems = (repos: Repo[]) => {
 </script>
 
 <template>
+  <ScrollTop />
   <div>
     <span class="mt-4 p-float-label">
       <AutoComplete
@@ -153,7 +157,7 @@ const syncSelectedItems = (repos: Repo[]) => {
     </Panel>
     <Panel class="mt-2" header="Repo dependency build stages">
       <template #icons>
-        <div class="flex  gap-1">
+        <div class="flex gap-1">
           <button class="p-panel-header-icon mr-2" @click="onMarkAll">
             <span class="pi pi-check"></span>
           </button>
