@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import {computed, ref} from 'vue'
 import { useReposStore } from '@/stores/repos'
 import TreeTable from 'primevue/treetable'
 import Button from 'primevue/button'
@@ -12,14 +12,16 @@ import MultiSelect from 'primevue/multiselect'
 
 const reposStore = useReposStore()
 
-const filters = ref({
-  name: null,
-  itemType: null,
-  isRoot: null,
-  template: null,
-  main: null,
-  dependencies: null
-})
+const emptyFilters = {
+  name: '',
+  itemType: '',
+  isRoot: '',
+  template: '',
+  main: '',
+  dependencies: ''
+}
+
+const filters = ref({ ...emptyFilters })
 const nodes = reposStore.treeItems
 const expandedKeys = ref({})
 const types = [null, 'LIB', 'APP']
@@ -32,19 +34,19 @@ const columns = [
 ]
 const selectedColumns = ref(['itemType', 'dependencies'])
 
-const onClearFilters = () => {
-  filters.value = {
-    name: null,
-    itemType: null,
-    isRoot: null,
-    template: null,
-    main: null,
-    dependencies: null
+const isRootFilter = computed({
+  get: () => filters.value.isRoot == '' ? null : filters.value.isRoot === 'true',
+  set: (newValue) => {
+    filters.value.isRoot = newValue == null ? '' : newValue.toString()
   }
+})
+
+const onClearFilters = () => {
+  filters.value = { ...emptyFilters }
 }
 
 const onExpandAll = () => {
-  expandedKeys.value = nodes.reduce((acc: { [key: string]: boolean; }, node) => {
+  expandedKeys.value = nodes.reduce((acc: { [key: string]: boolean }, node) => {
     acc[node.key] = true
     return acc
   }, {})
@@ -95,6 +97,11 @@ const onCollapseAll = () => {
               :type="slotProps.option"
               :label="slotProps.option"
             />
+            <ItemTypeTag
+                v-else
+                type="NONE"
+                label="NONE"
+            />
           </template>
           <template #value="slotProps">
             <ItemTypeTag v-if="slotProps.value" :type="slotProps.value" :label="slotProps.value" />
@@ -116,7 +123,7 @@ const onCollapseAll = () => {
       headerClass="w-6rem"
     >
       <template #filter>
-        <TriStateCheckbox v-model="filters['isRoot']" />
+        <TriStateCheckbox v-model="isRootFilter" />
       </template>
     </Column>
     <Column
@@ -150,7 +157,9 @@ const onCollapseAll = () => {
       </template>
       <template #body="slotProps">
         <ul v-if="slotProps.node.data.dependencies" class="dependency-list">
-          <li v-for="dep in slotProps.node.data.dependencies" :key="dep" class="dependency-item">{{ dep }}</li>
+          <li v-for="dep in slotProps.node.data.dependencies" :key="dep" class="dependency-item">
+            {{ dep }}
+          </li>
         </ul>
       </template>
     </Column>
@@ -161,10 +170,12 @@ const onCollapseAll = () => {
 .dependency-list {
   list-style-position: inside;
 }
+
 .dependency-item {
   overflow: clip;
   white-space: nowrap;
 }
+
 .dependency-item:hover {
   word-break: break-all;
   white-space: normal;

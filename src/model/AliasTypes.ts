@@ -1,2 +1,2 @@
-export type ItemType = 'LIB' | 'APP' | 'REP'
-export type ComponentType = 'LIB' | 'APP' | 'MIX'
+export type ItemType = 'LIB' | 'APP' | 'REP' | 'NONE'
+export type ComponentType = 'LIB' | 'APP' | 'MIX' | 'NONE'

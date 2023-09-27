@@ -15,6 +15,8 @@ const getTagClass = (type: ComponentType) => {
       return 'tag-app'
     case 'MIX':
       return 'tag-mix'
+    case 'NONE':
+      return 'tag-none'
     default:
       return ''
   }
@@ -45,5 +47,10 @@ const getTagClass = (type: ComponentType) => {
 .tag-mix {
   background: linear-gradient(to right, var(--rb-c-lib), var(--rb-c-app));
   color: #fff;
+}
+
+.tag-none {
+  background: transparent;
+  color: transparent;
 }
 </style>
