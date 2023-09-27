@@ -36,7 +36,7 @@ const columns = [
 const selectedColumns = ref(['itemType', 'dependencies'])
 
 const totalRepos = computed(() => nodes.length)
-const totalModules = computed(() => nodes.flatMap((node) => node.data.modules).length)
+const totalModules = computed(() => nodes.flatMap((node) => node.children).length)
 
 const isRootFilter = computed({
   get: () => (filters.value.isRoot == '' ? null : filters.value.isRoot === 'true'),
@@ -137,7 +137,7 @@ const onCollapseAll = () => {
         <InputText v-model="filters['template']" type="text" class="p-column-filter w-full" />
       </template>
       <template #body="slotProps">
-        <span class="long-text">{{ slotProps.node.data.template }}</span>
+        <p class="long-text">{{ slotProps.node.data.template }}</p>
       </template>
     </Column>
     <Column
