@@ -28,7 +28,7 @@ const expandedKeys = ref({})
 const types = [null, 'LIB', 'APP']
 const columns = [
   { key: 'itemType', label: 'Type' },
-  { key: 'isRoot', label: 'Is Root' },
+  { key: 'isRoot', label: 'Root' },
   { key: 'template', label: 'Template' },
   { key: 'main', label: 'Main' },
   { key: 'dependencies', label: 'Deps' }
@@ -67,6 +67,7 @@ const onCollapseAll = () => {
     :value="nodes"
     v-model:expandedKeys="expandedKeys"
     filterDisplay="row"
+    :resizableColumns="true"
   >
     <template #header>
       <div class="flex gap-1">
@@ -82,7 +83,7 @@ const onCollapseAll = () => {
         />
       </div>
     </template>
-    <Column field="name" header="Name" filterMatchMode="contains" headerClass="w-4" expander>
+    <Column field="name" header="Name" filterMatchMode="contains" headerClass="w-21rem" expander>
       <template #filter>
         <InputText v-model="filters['name']" type="text" class="p-column-filter w-full" />
       </template>
@@ -92,10 +93,15 @@ const onCollapseAll = () => {
       field="itemType"
       header="Type"
       filterMatchMode="contains"
-      headerClass="w-7rem"
+      headerClass="w-6rem"
     >
       <template #filter>
-        <Dropdown v-model="filters['itemType']" :options="types" class="p-column-filter w-full">
+        <Dropdown
+          id="type-dropdown"
+          v-model="filters['itemType']"
+          :options="types"
+          class="p-column-filter w-full"
+        >
           <template #option="slotProps">
             <ItemTypeTag
               v-if="slotProps.option"
@@ -119,7 +125,7 @@ const onCollapseAll = () => {
     <Column
       v-if="selectedColumns.includes('isRoot')"
       field="isRoot"
-      header="Is Root"
+      header="Root"
       filterMatchMode="contains"
       headerClass="w-6rem"
     >
@@ -188,5 +194,11 @@ const onCollapseAll = () => {
 .long-text:hover {
   word-break: break-all;
   white-space: normal;
+}
+</style>
+
+<style>
+#type-dropdown > div {
+  display: none;
 }
 </style>

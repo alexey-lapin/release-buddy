@@ -1,10 +1,31 @@
 @import './base.css';
 
 #app {
-  max-width: 1280px;
+  max-width: 95%;
   margin: 0 auto;
+  height: 100%;
 }
 
-body {
+@media screen and (min-width: 1920px) {
+  #app {
+    max-width: 1824px;
+  }
+}
+
+@supports (scrollbar-gutter: stable) {
+  html {
+    scrollbar-gutter: stable;
+  }
+}
+
+html, body {
+  height: 100%;
   font-family: var(--font-family);
+}
+
+:root {
+  --rb-c-lib: #ff0b99;
+  --rb-c-lib-fade: #ff0b994d;
+  --rb-c-app: #2b7ddc;
+  --rb-c-app-fade: #2b7ddc4c;
 }
